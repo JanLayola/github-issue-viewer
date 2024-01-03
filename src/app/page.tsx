@@ -4,6 +4,8 @@ import {useEffect, useState} from "react";
 import TextInputComponent from "@/app/components/TextInputComponent/TextInputComponent";
 import IssueCardComponent from "@/app/components/IssueCardComponent/IssueCardComponent";
 
+import {PropagateLoader} from "react-spinners";
+
 import IssuesService from "@/app/services/issues.service";
 
 import styles from './page.module.css'
@@ -14,12 +16,19 @@ export default function Home() {
   const [ searchString, setSearchString ] = useState('');
   const [ issues, setIssues ] = useState([]);
   const [ page, setPage ] = useState(0);
+  const [ loading, setLoading ] = useState(false)
 
   useEffect((): void => {
+    setLoading(true)
     searchIssuesByOrgAndRepo().then((newIssues) => {
       if (!newIssues.length) return setIssues([]);
       setIssues((prev) => [...prev, ...newIssues]);
-    }).catch((error): void => { console.error(error); setIssues([])});
+      setLoading(false)
+    }).catch((error): void => {
+      console.error(error);
+      setIssues([])
+      setLoading(false)
+    });
   }, [searchString, page]);
 
 
@@ -50,7 +59,7 @@ export default function Home() {
   }
 
   const renderMessage = () => {
-    if (!searchString) return renderWelcomeMessage();
+    if (!searchString && loading) return renderWelcomeMessage();
     return renderNotFoundMessage();
   }
 
@@ -84,9 +93,11 @@ export default function Home() {
     <main className={styles.main}>
     <TextInputComponent handleAction={(string: string) => setSearchString(string)}/>
       {
-        !issues.length ? renderMessage(): renderIssues()
+        !issues.length ? loading ? null : renderMessage(): renderIssues()
       }
-
+      <div className={styles.loaderContainer}>
+        <PropagateLoader color='#FFFFFF' loading={loading}/>
+      </div>
     </main>
   )
 }
