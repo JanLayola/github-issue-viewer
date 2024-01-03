@@ -49,20 +49,43 @@ export default function Home() {
     return splitString[1];
   }
 
+  const renderMessage = () => {
+    if (!searchString) return renderWelcomeMessage();
+    return renderNotFoundMessage();
+  }
+
+  const renderNotFoundMessage = () => (
+    <>
+      <p>Oh! We are sorry, or not. Issues not found this time. So maybe it's a good time to grab a beer and chat with your team. You're doing a great job!</p>
+    </>
+  )
+
+  const renderWelcomeMessage = () => (
+    <>
+      <p>Hi! Search a GitHub organization/repository to find the issues!</p>
+    </>
+  )
+
+
+  const renderIssues = () => {
+    return issues.map((issue, index: number) => <IssueCardComponent
+      key={issue.id}
+      title={issue.title}
+      labels={issue.labels.map((label) => label.name)}
+      number={issue.number}
+      state={issue.state}
+      userName={issue.user?.login}
+      isLast={index === issues.length - 1}
+      newLimit={() => setPage(page + 1)}
+    />)
+  }
 
   return (
     <main className={styles.main}>
-      <TextInputComponent handleAction={(string: string) => setSearchString(string)} />
-      {issues?.map((issue, index: number) => <IssueCardComponent
-        key={issue.id}
-        title={issue.title}
-        labels={issue.labels.map((label) => label.name)}
-        number={issue.number}
-        state={issue.state}
-        userName={issue.user?.login}
-        isLast={index === issues.length - 1}
-        newLimit={() => setPage(page + 1)}
-      />)}
+    <TextInputComponent handleAction={(string: string) => setSearchString(string)}/>
+      {
+        !issues.length ? renderMessage(): renderIssues()
+      }
 
     </main>
   )
