@@ -1,6 +1,7 @@
-import {MutableRefObject, ReactNode, useEffect, useRef} from "react";
+import { MutableRefObject, ReactNode, useEffect, useRef } from "react";
 
 import styles from "./IssueCardComponent.module.css"
+
 export interface IssueCardComponentProps {
   title: string;
   labels: Array<string>;
@@ -16,7 +17,7 @@ const IssueCardComponent = ({ title, labels, number, state, userName, isLast = f
   useEffect((): void => {
     if (!cardRef?.current) return;
 
-    const observer = new IntersectionObserver(([entry]) => {
+    const observer: IntersectionObserver = new IntersectionObserver(([entry]): void => {
       if (isLast && entry.isIntersecting) {
         newLimit();
         observer.unobserve(entry.target);

@@ -1,23 +1,34 @@
 "use client"
+import {useEffect, useState} from "react";
+
+import TextInputComponent from "@/app/components/TextInputComponent/TextInputComponent";
+import IssueCardComponent from "@/app/components/IssueCardComponent/IssueCardComponent";
+
+import IssuesService from "@/app/services/issues.service";
 
 import styles from './page.module.css'
-import TextInputComponent from "@/app/components/TextInputComponent/TextInputComponent";
-import IssuesService from "@/app/services/issues.service";
-import {useState} from "react";
 
 export default function Home() {
   const issueService: IssuesService = new IssuesService();
 
-  const [ issues, setIssues ] = useState();
+  const [ searchString, setSearchString ] = useState('');
+  const [ issues, setIssues ] = useState([]);
+  const [ page, setPage ] = useState(0);
 
-  const searchIssuesByOrgAndRepo = async ( searchString: string ) => {
+  useEffect((): void => {
+    searchIssuesByOrgAndRepo().then((newIssues) => {
+      if (!newIssues.length) return setIssues([]);
+      setIssues((prev) => [...prev, ...newIssues]);
+    }).catch((error): void => { console.error(error); setIssues([])});
+  }, [searchString, page]);
+
+
+  const searchIssuesByOrgAndRepo = async () => {
     if (!searchString) return;
-
     const organization: string | null = getOrganization(searchString);
     const repository: string | null = getRepository(searchString);
 
-    const issues = await issueService.getRepositoryIssues({ organization, repository })
-    setIssues(issues)
+    return await issueService.getRepositoryIssues({organization, repository, page})
   }
 
   const getOrganization = (searchString): null | string => {
@@ -41,7 +52,18 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <TextInputComponent handleAction={searchIssuesByOrgAndRepo} />
+      <TextInputComponent handleAction={(string: string) => setSearchString(string)} />
+      {issues?.map((issue, index: number) => <IssueCardComponent
+        key={issue.id}
+        title={issue.title}
+        labels={issue.labels.map((label) => label.name)}
+        number={issue.number}
+        state={issue.state}
+        userName={issue.user?.login}
+        isLast={index === issues.length - 1}
+        newLimit={() => setPage(page + 1)}
+      />)}
+
     </main>
   )
 }
