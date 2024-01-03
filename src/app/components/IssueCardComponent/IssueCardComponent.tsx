@@ -14,6 +14,7 @@ export interface IssueCardComponentProps {
 
 const IssueCardComponent = ({ title, labels, number, state, userName, isLast = false, newLimit }: IssueCardComponentProps): ReactNode => {
   const cardRef: MutableRefObject<any> = useRef(); // A better typing could be found fo sure, but the clock is running!
+
   useEffect((): void => {
     if (!cardRef?.current) return;
 

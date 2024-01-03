@@ -1,5 +1,5 @@
 "use client"
-import {useEffect, useState} from "react";
+import {SetStateAction, useEffect, useState} from "react";
 
 import TextInputComponent from "@/app/components/TextInputComponent/TextInputComponent";
 import IssueCardComponent from "@/app/components/IssueCardComponent/IssueCardComponent";
@@ -13,16 +13,16 @@ import styles from './page.module.css'
 export default function Home() {
   const issueService: IssuesService = new IssuesService();
 
-  const [ searchString, setSearchString ] = useState('');
-  const [ issues, setIssues ] = useState([]);
-  const [ page, setPage ] = useState(0);
-  const [ loading, setLoading ] = useState(false)
+  const [ searchString, setSearchString ] = useState<string>('');
+  const [ issues, setIssues ] = useState<any[]>([]);
+  const [ page, setPage ] = useState<number>(0);
+  const [ loading, setLoading ] = useState<boolean>(false)
 
   useEffect((): void => {
     setLoading(true)
-    searchIssuesByOrgAndRepo().then((newIssues) => {
+    searchIssuesByOrgAndRepo().then((newIssues: any[]) => {
       if (!newIssues.length) return setIssues([]);
-      setIssues((prev) => [...prev, ...newIssues]);
+      setIssues((prev: SetStateAction<any>) => [...prev, ...newIssues]);
       setLoading(false)
     }).catch((error): void => {
       console.error(error);
@@ -40,8 +40,8 @@ export default function Home() {
     return await issueService.getRepositoryIssues({organization, repository, page})
   }
 
-  const getOrganization = (searchString): null | string => {
-    const splitString = searchString.split('/');
+  const getOrganization = (searchString: string): null | string => {
+    const splitString: string[] = searchString.split('/');
     if (!splitString.length) {
       return null;
     }
@@ -49,8 +49,8 @@ export default function Home() {
     return splitString[0];
   }
 
-  const getRepository = (searchString): null | string => {
-    const splitString = searchString.split('/');
+  const getRepository = (searchString: string): null | string => {
+    const splitString: string[] = searchString.split('/');
     if (splitString.length <= 1) {
       return null;
     }
@@ -59,20 +59,16 @@ export default function Home() {
   }
 
   const renderMessage = () => {
-    if (!searchString && loading) return renderWelcomeMessage();
+    if (!searchString) return renderWelcomeMessage();
     return renderNotFoundMessage();
   }
 
   const renderNotFoundMessage = () => (
-    <>
-      <p>Oh! We are sorry, or not. Issues not found this time. So maybe it's a good time to grab a beer and chat with your team. You're doing a great job!</p>
-    </>
+       <p>Oh! We are sorry, or not. Issues not found this time. So maybe it&apos;s a good time to grab a beer and chat with your team. You&apos;re doing a great job!</p>
   )
 
   const renderWelcomeMessage = () => (
-    <>
-      <p>Hi! Search a GitHub organization/repository to find the issues!</p>
-    </>
+    <p>Hi! Search a GitHub organization/repository to find the issues!</p>
   )
 
 
@@ -80,7 +76,7 @@ export default function Home() {
     return issues.map((issue, index: number) => <IssueCardComponent
       key={issue.id}
       title={issue.title}
-      labels={issue.labels.map((label) => label.name)}
+      labels={issue.labels.map((label: { name: string }) => label.name)}
       number={issue.number}
       state={issue.state}
       userName={issue.user?.login}
@@ -93,7 +89,7 @@ export default function Home() {
     <main className={styles.main}>
     <TextInputComponent handleAction={(string: string) => setSearchString(string)}/>
       {
-        !issues.length ? loading ? null : renderMessage(): renderIssues()
+        !issues.length ?  renderMessage(): renderIssues()
       }
       <div className={styles.loaderContainer}>
         <PropagateLoader color='#FFFFFF' loading={loading}/>
