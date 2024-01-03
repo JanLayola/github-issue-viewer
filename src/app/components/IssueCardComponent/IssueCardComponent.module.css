@@ -1,0 +1,59 @@
+.issueCardContainer {
+    margin: 10px 0;
+    padding: 20px;
+
+    background-color: #181818;
+    border-radius: 12px;
+
+    width: 100%;
+}
+
+.issueCardContainer:hover {
+    background-color: #404040;
+}
+.topSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    flex-wrap: wrap-reverse;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    overflow: hidden;
+}
+
+.issueTitle {
+    font-weight: bold;
+    font-size: 18px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.label {
+    background-color: #3700B3;
+    padding: 5px 10px;
+    margin: 0 5px;
+    border-radius: 16px;
+}
+
+.open {
+    background-color: #03DAC6;
+    min-width: 10px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.closed {
+    background-color: #CF6679;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
